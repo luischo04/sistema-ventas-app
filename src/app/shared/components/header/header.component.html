@@ -1,13 +1,21 @@
 <mat-toolbar color="primary">
-    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <span>My App</span>
+  <ng-container *ngIf="!isAdmin; else viewAdmin">
+    <span>Sistema de ventas</span>
     <span class="spacer"></span>
-    <div>
-        <!-- Con routerLink nosotros le indicamos a donde queremos que se dirija al presionar el boton -->
-        <a mat-button [routerLink]="'/login'">Iniciar sesión</a>
-        <a mat-button>Cerrar sesión</a>
-        <a mat-button [routerLink]="'/admin'">Admin</a>
-    </div>
-  </mat-toolbar>
+  </ng-container>
+  <div>
+    <!-- Con routerLink nosotros le indicamos a donde queremos que se dirija al presionar el boton -->
+    <a *ngIf="!isAdmin" mat-button [routerLink]="'/login'">Iniciar sesión</a>
+    <a *ngIf="isAdmin" mat-button>Cerrar sesión</a>
+    <a *ngIf="isAdmin" mat-button [routerLink]="'/admin'">Admin</a>
+    <button type="button" mat-button (click)="isAdmin = !isAdmin">Change</button>
+  </div>
+</mat-toolbar>
+
+<ng-template #viewAdmin>
+  <button mat-icon-button (click)="onToggleSidenav()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>Sistema de ventas</span>
+  <span class="spacer"></span>
+</ng-template>
