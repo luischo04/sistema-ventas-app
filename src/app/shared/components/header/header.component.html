@@ -5,12 +5,15 @@
   </ng-container>
   <div>
     <!-- Con routerLink nosotros le indicamos a donde queremos que se dirija al presionar el boton -->
-    <a *ngIf="!isAdmin" mat-button [routerLink]="'/login'">Iniciar sesión</a>
-    <a *ngIf="isAdmin" mat-button>Cerrar sesión</a>
-    <a *ngIf="isAdmin" mat-button [routerLink]="'/admin'">Admin</a>
+    <a *ngIf="!isLogged; else viewLogout" mat-button routerLink="/login">Iniciar sesión</a>
+    <a mat-button routerLink="/admin">Admin</a>
     <button type="button" mat-button (click)="isAdmin = !isAdmin">Change</button>
   </div>
 </mat-toolbar>
+
+<ng-template #viewLogout>
+  <a mat-button (click)="onLogout()">Cerrar sesión</a>
+</ng-template>
 
 <ng-template #viewAdmin>
   <button mat-icon-button (click)="onToggleSidenav()">
