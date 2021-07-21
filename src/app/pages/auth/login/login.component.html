@@ -6,13 +6,15 @@
                 <mat-form-field class="full-width-input" appearance="outline">
                     <mat-label>Usuario</mat-label>
                     <input formControlName="usuario" type="text" matInput required>
+                    <mat-error>{{ getErrorMessage('usuario') }}</mat-error>
                 </mat-form-field>
 
                 <mat-form-field class="full-width-input" appearance="outline">
                     <mat-label>Contraseña</mat-label>
                     <input formControlName="password" type="password" matInput required>
+                    <mat-error>{{ getErrorMessage('password') }}</mat-error>
                 </mat-form-field>
-                <button type="submit" mat-raised-button color="primary">
+                <button [disabled]="loginForm.invalid" type="submit" mat-raised-button color="primary">
                     <mat-icon>login</mat-icon>
                     Entrar
                 </button>

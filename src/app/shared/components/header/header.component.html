@@ -1,18 +1,17 @@
 <mat-toolbar color="primary">
-  <ng-container *ngIf="!isAdmin; else viewAdmin">
+  <ng-container *ngIf="!isLogged; else viewAdmin">
     <span>Sistema de ventas</span>
     <span class="spacer"></span>
   </ng-container>
   <div>
     <!-- Con routerLink nosotros le indicamos a donde queremos que se dirija al presionar el boton -->
     <a *ngIf="!isLogged; else viewLogout" mat-button routerLink="/login">Iniciar sesión</a>
-    <a mat-button routerLink="/admin">Admin</a>
-    <button type="button" mat-button (click)="isAdmin = !isAdmin">Change</button>
   </div>
 </mat-toolbar>
 
 <ng-template #viewLogout>
   <a mat-button (click)="onLogout()">Cerrar sesión</a>
+  <a mat-button routerLink="/admin">Admin</a>
 </ng-template>
 
 <ng-template #viewAdmin>
