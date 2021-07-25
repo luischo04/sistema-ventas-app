@@ -15,6 +15,7 @@ const helper = new JwtHelperService();
 export class AuthService {
 
   private loggedIn = new BehaviorSubject<boolean>(false);
+  private rol = new BehaviorSubject<string>("");
 
   constructor(private http: HttpClient, private _snackBar: MatSnackBar, private router: Router) {
     this.checkToken();
@@ -24,11 +25,16 @@ export class AuthService {
     return this.loggedIn.asObservable();
   }
 
+  get getRol$(): Observable<string> {
+    return this.rol.asObservable();
+  }
+
   logIn(authData: User): Observable<UserResponse | void>{
     return this.http.post<UserResponse>(`${environment.URL_API}/auth`, authData).pipe(
       map((user : UserResponse) => {
-        this.saveToken(user.token);
+        this.saveLocalStorage(user);
         this.loggedIn.next(true);
+        this.rol.next(user.rol);
         return user;
       }),
       catchError((err) => this.handleError(err))
@@ -36,19 +42,29 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     this.loggedIn.next(false);
+    this.rol.next("");
     this.router.navigate(['/login']);
   }
 
   private checkToken(): void {
-    const userToken = localStorage.getItem("token")?.toString();
-    const isExpired = helper.isTokenExpired(userToken);
-    isExpired ? this.logout : this.loggedIn.next(true);
+    const user = JSON.parse(String(localStorage.getItem("user"))) || null;
+    if(user) {
+      const isExpired = helper.isTokenExpired(user.token);
+      if(isExpired){
+        this.logout();
+      } else {
+        this.loggedIn.next(true);
+        this.rol.next(user.rol);
+      }
+    }
   }
 
-  private saveToken(token: string): void {
-    localStorage.setItem("token", token);
+  private saveLocalStorage(user: UserResponse): void {
+    const {cveUsuario, cveRol, message, ...rest} = user;
+    console.log(rest);
+    localStorage.setItem("user", JSON.stringify(rest));
   }
 
   private handleError(err: any): Observable<never> {

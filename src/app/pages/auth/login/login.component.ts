@@ -2,7 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -11,7 +12,8 @@ import { Subscription } from 'rxjs';
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
-  private subscriptions: Subscription = new Subscription();
+  hide = true;
+  private destroy= new Subject<any>();
   loginForm = this.fb.group({
     usuario: ['', [
       Validators.email,
@@ -30,19 +32,20 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+    this.destroy.next({});
+    this.destroy.complete();
   }
 
   onLogin(): void {
     const formValue = this.loginForm.value;
     
-    this.subscriptions.add(
-      this.authSvc.logIn(formValue).subscribe((res) => {
+      this.authSvc.logIn(formValue)
+      .pipe(takeUntil(this.destroy))
+      .subscribe((res) => {
         if (res) {
           this.router.navigate(['']);
         }
       })
-    );
   }
 
   getErrorMessage(field: string): string {

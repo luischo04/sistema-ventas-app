@@ -11,7 +11,10 @@
 
                 <mat-form-field class="full-width-input" appearance="outline">
                     <mat-label>Contraseña</mat-label>
-                    <input formControlName="password" type="password" matInput required>
+                    <input formControlName="password" matInput [type]="hide ? 'password' : 'text'" required>
+                    <button type="button" mat-icon-button matSuffix (click)="hide = !hide">
+                        <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
                     <mat-error>{{ getErrorMessage('password') }}</mat-error>
                 </mat-form-field>
                 <button [disabled]="loginForm.invalid" type="submit" mat-raised-button color="primary">

@@ -9,6 +9,7 @@ import { FooterComponent } from './shared/components/footer/footer.component';
 import { MaterialModule } from '@app/material.modules';
 import { SidebarModule } from './shared/components/sidebar/sidebar.module';
 import { HttpClientModule } from '@angular/common/http';
+import { UtilsService } from '@shared/services/util.service';
 
 
 
@@ -26,7 +27,7 @@ import { HttpClientModule } from '@angular/common/http';
     SidebarModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [UtilsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
