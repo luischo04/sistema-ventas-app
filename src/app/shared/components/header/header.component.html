@@ -12,5 +12,18 @@
 </mat-toolbar>
 
 <ng-template #viewLogout>
-  <a mat-button (click)="onLogout()">Cerrar sesión</a>
+  <button mat-button [matMenuTriggerFor]="menu">
+    <span>Usuario</span>
+    <mat-icon>expand_more</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item>
+      <mat-icon>badge</mat-icon>
+      <span>Mi Perfil</span>
+    </button>
+    <button mat-menu-item (click)="onLogout()">
+      <mat-icon>logout</mat-icon>
+      <span>Cerrar sesión</span>
+    </button>
+  </mat-menu>
 </ng-template>

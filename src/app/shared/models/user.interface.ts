@@ -1,5 +1,5 @@
 export interface User {
-    usuario: string;
+    username: string;
     password: string;
 }
 
@@ -7,7 +7,7 @@ export interface UserResponse {
     message: string;
     token: string;
     cveUsuario: string;
-    usuario: string;
+    username: string;
     cveRol: number;
     rol: string;
 }

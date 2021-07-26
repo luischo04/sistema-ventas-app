@@ -7,8 +7,10 @@ import { map, catchError } from 'rxjs/operators'
 import { environment } from '@env/environment';
 import { JwtHelperService } from "@auth0/angular-jwt";
 import { Router } from '@angular/router'
+import { UtilsService } from '@app/shared/services/util.service';
 
 const helper = new JwtHelperService();
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,7 +19,7 @@ export class AuthService {
   private loggedIn = new BehaviorSubject<boolean>(false);
   private rol = new BehaviorSubject<string>("");
 
-  constructor(private http: HttpClient, private _snackBar: MatSnackBar, private router: Router) {
+  constructor(private http: HttpClient, private _snackBar: MatSnackBar, private router: Router, private utilsSvc: UtilsService) {
     this.checkToken();
   }
 
@@ -42,6 +44,7 @@ export class AuthService {
   }
 
   logout(): void {
+    this.utilsSvc.openSidebar(false);
     localStorage.removeItem("user");
     this.loggedIn.next(false);
     this.rol.next("");
@@ -71,7 +74,7 @@ export class AuthService {
     let errorMessage = "Ocurrio un error";
 
     if(err){
-      errorMessage = `Error: ${err.message}`;
+      errorMessage = `Error: ${ typeof err.error.message == 'undefined' ? err.message : err.error.message }`;
       this._snackBar.open(errorMessage, '', {
         duration: 6000
       });
