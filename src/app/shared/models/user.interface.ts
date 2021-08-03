@@ -6,8 +6,11 @@ export interface User {
 export interface UserResponse {
     message: string;
     token: string;
+    nombre: string;
+    apellidos: string;
     cveUsuario: string;
     username: string;
     cveRol: number;
     rol: string;
+    fechaRegistro: Date;
 }

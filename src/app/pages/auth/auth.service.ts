@@ -8,7 +8,7 @@ import { environment } from '@env/environment';
 import { JwtHelperService } from "@auth0/angular-jwt";
 import { Router } from '@angular/router'
 import { UtilsService } from '@app/shared/services/util.service';
-
+import * as crypto from 'crypto-js';
 const helper = new JwtHelperService();
 
 @Injectable({
@@ -16,27 +16,25 @@ const helper = new JwtHelperService();
 })
 export class AuthService {
 
-  private loggedIn = new BehaviorSubject<boolean>(false);
-  private rol = new BehaviorSubject<string>("");
+  private user = new BehaviorSubject<UserResponse | null>(null);
 
   constructor(private http: HttpClient, private _snackBar: MatSnackBar, private router: Router, private utilsSvc: UtilsService) {
     this.checkToken();
   }
 
-  get isLogged(): Observable<boolean> {
-    return this.loggedIn.asObservable();
+  get user$(): Observable<UserResponse | null> {
+    return this.user.asObservable();
   }
 
-  get getRol$(): Observable<string> {
-    return this.rol.asObservable();
+  get userValue(): UserResponse | null {
+    return this.user.getValue();
   }
 
-  logIn(authData: User): Observable<UserResponse | void>{
+  logIn(authData: User): Observable<UserResponse | void> {
     return this.http.post<UserResponse>(`${environment.URL_API}/auth`, authData).pipe(
-      map((user : UserResponse) => {
+      map((user: UserResponse) => {
         this.saveLocalStorage(user);
-        this.loggedIn.next(true);
-        this.rol.next(user.rol);
+        this.user.next(user);
         return user;
       }),
       catchError((err) => this.handleError(err))
@@ -46,35 +44,40 @@ export class AuthService {
   logout(): void {
     this.utilsSvc.openSidebar(false);
     localStorage.removeItem("user");
-    this.loggedIn.next(false);
-    this.rol.next("");
-    this.router.navigate(['/login']);
+    this.user.next(null);
+    this.router.navigate(['']);
   }
 
   private checkToken(): void {
-    const user = JSON.parse(String(localStorage.getItem("user"))) || null;
-    if(user) {
-      const isExpired = helper.isTokenExpired(user.token);
-      if(isExpired){
-        this.logout();
-      } else {
-        this.loggedIn.next(true);
-        this.rol.next(user.rol);
+    try {
+      const bytes = crypto.AES.decrypt(String(localStorage.getItem('user')), environment.SECRET_KEY);
+      const user = JSON.parse(bytes.toString(crypto.enc.Utf8));
+      // const user = JSON.parse(String(localStorage.getItem("user"))) || null;
+      if (user) {
+        const isExpired = helper.isTokenExpired(user.token);
+        if (isExpired) {
+          this.logout();
+        } else {
+          this.user.next(user);
+        }
       }
+    } catch (error) {
+      this.logout();
     }
+
   }
 
   private saveLocalStorage(user: UserResponse): void {
-    const {cveUsuario, cveRol, message, ...rest} = user;
-    console.log(rest);
-    localStorage.setItem("user", JSON.stringify(rest));
+    const { message, ...rest } = user;
+    var encrypt = crypto.AES.encrypt(JSON.stringify(rest), environment.SECRET_KEY).toString();
+    localStorage.setItem("user", encrypt);
   }
 
   private handleError(err: any): Observable<never> {
     let errorMessage = "Ocurrio un error";
 
-    if(err){
-      errorMessage = `Error: ${ typeof err.error.message == 'undefined' ? err.message : err.error.message }`;
+    if (err) {
+      errorMessage = `Error: ${typeof err.error.message == 'undefined' ? err.message : err.error.message}`;
       this._snackBar.open(errorMessage, '', {
         duration: 6000
       });

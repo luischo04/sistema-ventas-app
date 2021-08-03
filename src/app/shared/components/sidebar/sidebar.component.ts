@@ -17,36 +17,40 @@ export class SidebarComponent implements OnInit, OnDestroy {
   constructor(private authSvc: AuthService) { }
 
   ngOnInit(): void {
-    this.authSvc.getRol$
+    this.authSvc.user$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(rol => {
-        if (rol == 'admin') {
-          this.lstMenu = [
-            {
-              nombre: 'Usuarios',
-              icono: 'people',
-              ruta: '/admin/users'
-            },
-            {
-              nombre: 'Categorias',
-              icono: 'category',
-              ruta: '/admin/categories'
-            },
-            {
-              nombre: 'Reportes',
-              icono: 'assessment',
-              ruta: '/admin/reports'
-            }
-          ];
-        } else if(rol == 'ventas') {
-          this.lstMenu = [
-            {
-              nombre: 'Ventas',
-              icono: 'shopping_bag',
-              ruta: '/ventas/ventas'
-            }
-          ];
+      .subscribe(user => {
+        this.lstMenu = [];
+        if(user){
+          if (user.rol == 'admin') {
+            this.lstMenu = [
+              {
+                nombre: 'Usuarios',
+                icono: 'people',
+                ruta: '/admin/users'
+              },
+              {
+                nombre: 'Categorias',
+                icono: 'category',
+                ruta: '/admin/categories'
+              },
+              {
+                nombre: 'Reportes',
+                icono: 'assessment',
+                ruta: '/admin/reports'
+              }
+            ];
+          } else if(user.rol == 'ventas') {
+            this.lstMenu = [
+              {
+                nombre: 'Ventas',
+                icono: 'shopping_bag',
+                ruta: '/ventas/ventas'
+              }
+            ];
+          }
         }
+        
       });
   }
 
