@@ -1,31 +1,49 @@
 <h2 mat-dialog-title>{{ data?.title }}</h2>
 <mat-dialog-content>
-    <form>
+    <form [formGroup]="userForm">
 
         <mat-form-field class="full-width" appearance="outline">
             <mat-label>Nombre: </mat-label>
-            <input matInput required>
+            <input formControlName="nombre" matInput required>
+            <mat-error>
+                {{ getErrorMessage('nombre') }}
+            </mat-error>
         </mat-form-field>
 
         <mat-form-field class="full-width"  appearance="outline">
             <mat-label>Apellidos: </mat-label>
-            <input matInput required>
+            <input formControlName="apellidos" matInput required>
+            <mat-error>
+                {{ getErrorMessage('apellidos') }}
+            </mat-error>
         </mat-form-field>
 
         <mat-form-field class="full-width"  appearance="outline">
             <mat-label>Username: </mat-label>
-            <input matInput required>
+            <input formControlName="username" matInput required>
+            <mat-error>
+                {{ getErrorMessage('username') }}
+            </mat-error>
         </mat-form-field>
 
         <mat-form-field class="full-width"  appearance="outline">
             <mat-label>Contraseña: </mat-label>
-            <input type="password" matInput required>
+            <input formControlName="password" type="password" matInput required>
+            <mat-error>
+                {{ getErrorMessage('password') }}
+            </mat-error>
         </mat-form-field>
 
         <mat-form-field class="full-width" appearance="outline">
             <mat-label>Rol</mat-label>
-            <mat-select>
+            <mat-select formControlName="cveRol">
+                <mat-option *ngFor="let rol of roles" [value]="rol.cveRol">
+                    {{ rol.descripcion }}
+                </mat-option>
             </mat-select>
+            <mat-error>
+                {{ getErrorMessage('cveRol') }}
+            </mat-error>
         </mat-form-field>
 
     </form>
@@ -36,7 +54,7 @@
         <mat-icon>cancel</mat-icon>
         Cancelar
     </button>
-    <button mat-raised-button color="primary">
+    <button mat-raised-button color="primary" (click)="onSave()">
         <mat-icon>save</mat-icon>
         Guardar
     </button>
