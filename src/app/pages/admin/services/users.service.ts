@@ -25,8 +25,6 @@ export class UsersService {
       this.handleError(error)));
   }
 
-  getById(): void {}
-
   new(user: UserResponse): Observable<any> {
     return this.http.put<any>(`${environment.URL_API}/usuario`, user)
     .pipe(catchError((error) => this.handleError(error)));
@@ -34,6 +32,11 @@ export class UsersService {
 
   update(user: UserResponse): Observable<any> {
     return this.http.post<any>(`${environment.URL_API}/usuario`, user)
+    .pipe(catchError((error) => this.handleError(error)));
+  }
+
+  delete(cveUsuario: number): Observable<any> {
+    return this.http.delete<any>(`${environment.URL_API}/usuario/${cveUsuario}`)
     .pipe(catchError((error) => this.handleError(error)));
   }
 
