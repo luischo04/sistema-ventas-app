@@ -7,8 +7,8 @@ import { Rol } from '@app/shared/models/rol.interface';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 enum Action{
-  EDIT = "",
-  NEW = ""
+  EDIT = "edit",
+  NEW = "new"
 }
 
 @Component({
@@ -20,10 +20,12 @@ export class ModalFormularioComponent implements OnInit, OnDestroy {
 
   // Variables
   actionTODO = Action.NEW;
+  showPasswordField = true;
   private destroy$ = new Subject<any>();
   roles: Rol[] = [];
 
   userForm = this.fb.group({
+    cveUsuario : [''],
     nombre : ['', [Validators.required]],
     apellidos : ['', [Validators.required]],
     username : ['', [Validators.required, Validators.email]],
@@ -38,7 +40,11 @@ export class ModalFormularioComponent implements OnInit, OnDestroy {
 
     if(this.data?.user.hasOwnProperty("cveUsuario")){
       this.actionTODO = Action.EDIT;
+      this.userForm.get('password')?.setValidators(null);
+      this.userForm.updateValueAndValidity();
+      this.showPasswordField = false;
       this.data.title = "Editar usuario"
+      this.editar();
     }
   }
 
@@ -49,32 +55,49 @@ export class ModalFormularioComponent implements OnInit, OnDestroy {
 
   private getRoles(): void {
     this.UsersSvc.getRol()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(roles => this.roles = roles)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(roles => this.roles = roles)
   }
 
   onSave(): void{
-    if(this.userForm.invalid){
+    if(this.userForm.invalid)
       return;
-    }
     
     const formValue = this.userForm.value;
 
     if(this.actionTODO == Action.NEW) {
       // Insert
-      this.UsersSvc.new(formValue)
+      const { cveUsuario, ...rest } = formValue;
+      this.UsersSvc.new(rest)
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
         this._snackBar.open(result.message, '', {
           duration: 6000
         });
-        this.dialogRef.close(true);
+        this.dialogRef.close(true);  
       });
     } else {
       // Update
+      const { password, ...rest } = formValue;
+      this.UsersSvc.update(rest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        this._snackBar.open(result.message, '', {
+          duration: 6000
+        });
+        this.dialogRef.close(true);  
+      });
     }
+  }
 
-    console.log(this.UsersSvc);
+  private editar(): void {
+    this.userForm.patchValue({
+      cveUsuario : this.data?.user.cveUsuario,
+      nombre : this.data?.user.nombre,
+      apellidos : this.data?.user.apellidos,
+      username : this.data?.user.username,
+      cveRol : this.data?.user.cveRol
+    });
   }
 
   getErrorMessage(field: string): string{

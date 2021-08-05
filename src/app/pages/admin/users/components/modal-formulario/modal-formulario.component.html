@@ -26,7 +26,7 @@
             </mat-error>
         </mat-form-field>
 
-        <mat-form-field class="full-width"  appearance="outline">
+        <mat-form-field class="full-width"  appearance="outline" *ngIf="showPasswordField">
             <mat-label>Contraseña: </mat-label>
             <input formControlName="password" type="password" matInput required>
             <mat-error>
@@ -54,7 +54,7 @@
         <mat-icon>cancel</mat-icon>
         Cancelar
     </button>
-    <button mat-raised-button color="primary" (click)="onSave()">
+    <button mat-raised-button [disabled]="userForm.invalid" color="primary" (click)="onSave()">
         <mat-icon>save</mat-icon>
         Guardar
     </button>

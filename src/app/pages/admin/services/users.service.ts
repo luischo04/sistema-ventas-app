@@ -32,7 +32,10 @@ export class UsersService {
     .pipe(catchError((error) => this.handleError(error)));
   }
 
-  update(): void {}
+  update(user: UserResponse): Observable<any> {
+    return this.http.post<any>(`${environment.URL_API}/usuario`, user)
+    .pipe(catchError((error) => this.handleError(error)));
+  }
 
   private handleError(err: any): Observable<never> {
     let errorMessage = "Ocurrio un error";

@@ -29,15 +29,27 @@ export class UsersComponent implements OnInit, OnDestroy {
   constructor(private userSvc: UsersService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
+    this.listUsers();
+  }
+
+  private listUsers(): void {
     this.userSvc.lista()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(users => this.lstUsers = users);
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(users => this.lstUsers = users);
   }
 
   onOpenModal(user = {}): void {
     const dialogRef = this.dialog.open(ModalFormularioComponent, {
       disableClose: true,
       data: {title: 'Nuevo usuario', user}
+    });
+
+    dialogRef.afterClosed()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(result => {
+      if(result){
+        this.listUsers();
+      }
     });
   }
 
